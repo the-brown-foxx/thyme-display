@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:thyme_to_park_display/service/display/display_controller.dart';
 import 'package:thyme_to_park_display/service/display/model/display_controller_event.dart';
@@ -17,25 +19,31 @@ class StatefulDisplay extends StatefulWidget {
 }
 
 class _StatefulDisplayState extends State<StatefulDisplay> {
+  Timer? resetTimer;
   DisplayState state = const ShowingInstructionsState();
   var vacantSpace = 0;
 
   @override
   void initState() {
     widget._displayController.events.listen((final event) {
-      setState(() {
-        if (event is UpdateVacantSpaceEvent) {
-          vacantSpace = event.vacantSpace;
-        } else if (event is ShowInstructionsEvent) {
-          state = const ShowingInstructionsState();
-        } else if (event is ShowCarInfoEvent) {
-          state = ShowingCarInfoState(car: event.car);
-        } else if (event is ShowUnauthorizedMessageEvent) {
+      if (event is UpdateVacantSpaceEvent) {
+        setState(() => vacantSpace = event.vacantSpace);
+      } else if (event is ShowInstructionsEvent) {
+        setState(() => state = const ShowingInstructionsState());
+      } else if (event is ShowCarInfoEvent) {
+        setState(() => state = ShowingCarInfoState(car: event.car));
+      } else if (event is ShowUnauthorizedMessageEvent) {
+        setState(() {
           state = ShowingUnauthorizedMessageState(
             registrationId: event.registrationId,
           );
-        }
-      });
+        });
+        resetTimer?.cancel();
+        resetTimer = Timer(const Duration(seconds: 10), () {
+          if (!mounted) return;
+          setState(() => state = const ShowingInstructionsState());
+        });
+      }
     });
     super.initState();
   }

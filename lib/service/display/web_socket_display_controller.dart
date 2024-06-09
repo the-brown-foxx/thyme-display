@@ -16,7 +16,7 @@ class WebSocketDisplayController implements DisplayController {
 
   WebSocketDisplayController() {
     final channel = WebSocketChannel.connect(
-      Uri.parse('ws://127.0.0.1:8070/ws'),
+      Uri.parse('ws://127.0.0.1:8071/display-controller'),
     );
 
     channel.stream.listen((final skibidi) {
