@@ -8,6 +8,10 @@ class ShowingInstructionsState extends DisplayState {
   const ShowingInstructionsState();
 }
 
+class ShowingParkingFullState extends DisplayState {
+  const ShowingParkingFullState();
+}
+
 class ShowingCarInfoState extends DisplayState {
   final Car car;
 

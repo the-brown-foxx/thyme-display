@@ -43,12 +43,18 @@ class _LicensePlateState extends State<LicensePlate>
 
   @override
   Widget build(final BuildContext context) {
-    final displayState = widget.displayState;
-    final text = displayState is ShowingCarInfoState
-        ? displayState.car.registrationId
-        : displayState is ShowingUnauthorizedMessageState
-            ? displayState.registrationId
-            : 'Detecting...';
+    final text = switch (widget.displayState) {
+      ShowingInstructionsState _ => 'Detecting...',
+      ShowingParkingFullState _ => 'PARKING FULL',
+      final ShowingCarInfoState displayState => displayState.car.registrationId,
+      final ShowingUnauthorizedMessageState displayState =>
+        displayState.registrationId,
+    };
+
+    final opacity = switch (widget.displayState) {
+      ShowingInstructionsState _ => animationController.value,
+      _ => 1.0,
+    };
 
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 128),
@@ -59,9 +65,7 @@ class _LicensePlateState extends State<LicensePlate>
           child: Padding(
             padding: const EdgeInsets.all(32),
             child: Opacity(
-              opacity: displayState is ShowingInstructionsState
-                  ? animationController.value
-                  : 1,
+              opacity: opacity,
               child: Text(text, style: monospace.copyWith(fontSize: 48)),
             ),
           ),
